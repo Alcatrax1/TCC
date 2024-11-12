@@ -121,18 +121,18 @@
     </div>
 
     <script>
-        const questions = [
-            {
-                question: "Qual é a função principal da placa-mãe em um computador?",
-                options: [
-                    "Gerenciar gráficos e áudio", 
-                    "Conectar e permitir a comunicação entre todos os componentes", 
-                    "Armazenar dados temporários", 
-                    "Fornecer energia ao computador"
-                ],
-                answer: 1
-            },
-            {
+       const questions = [
+    {
+        question: "Qual é a função principal da placa-mãe em um computador?",
+        options: [
+            "Gerenciar gráficos e áudio", 
+            "Conectar e permitir a comunicação entre todos os componentes", 
+            "Armazenar dados temporários", 
+            "Fornecer energia ao computador"
+        ],
+        answer: 1
+    },
+    {
                 question: "O que significa o termo 'soquete' em relação à placa-mãe e processador?",
                 options: [
                     "Um tipo de cabo de alimentação", 
@@ -235,88 +235,89 @@
         ];
 
         let currentQuestionIndex = 0;
-        let score = 0;
-        let timerInterval;
-        let timeTaken = 0; // Para contabilizar o tempo que o jogador leva para responder
-        const MAX_TIME = 15; // Tempo máximo em segundos
-        const POINTS_PER_SECOND = 1; // Pontos por segundo
+let score = 0;
+let timerInterval;
+let timeTaken = 0; // Para contar o tempo que o jogador leva para responder
+const MAX_TIME = 15; // Tempo máximo em segundos
+const MAX_POINTS = 10; // Pontuação máxima por questão
 
-        document.getElementById("startGame").addEventListener("click", startQuestion);
+document.getElementById("startGame").addEventListener("click", startQuestion);
 
-        function startQuestion() {
-            if (currentQuestionIndex >= questions.length) {
-                endGame();
-                return;
-            }
+function startQuestion() {
+    if (currentQuestionIndex >= questions.length) {
+        endGame();
+        return;
+    }
 
-            document.getElementById("loginScreen").style.display = "none";
-            document.getElementById("gameScreen").style.display = "block";
-            document.getElementById("scoreScreen").style.display = "none";
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("gameScreen").style.display = "block";
+    document.getElementById("scoreScreen").style.display = "none";
 
-            const currentQuestion = questions[currentQuestionIndex];
-            document.getElementById("questionTitle").innerText = currentQuestion.question;
-            const optionsContainer = document.getElementById("options");
-            optionsContainer.innerHTML = ""; // Limpar opções anteriores
+    const currentQuestion = questions[currentQuestionIndex];
+    document.getElementById("questionTitle").innerText = currentQuestion.question;
+    const optionsContainer = document.getElementById("options");
+    optionsContainer.innerHTML = ""; // Limpar opções anteriores
 
-            currentQuestion.options.forEach((option, index) => {
-                const button = document.createElement("button");
-                button.innerText = option;
-                button.onclick = () => checkAnswer(index);
-                optionsContainer.appendChild(button);
-            });
+    currentQuestion.options.forEach((option, index) => {
+        const button = document.createElement("button");
+        button.innerText = option;
+        button.onclick = () => checkAnswer(index);
+        optionsContainer.appendChild(button);
+    });
 
-            // Reiniciar temporizador
-            timeTaken = 0;
-            document.getElementById("timeLeft").innerText = MAX_TIME;
-            timerInterval = setInterval(() => {
-                timeTaken++;
-                if (timeTaken >= MAX_TIME) {
-                    clearInterval(timerInterval);
-                    alert("Tempo esgotado!");
-                    currentQuestionIndex++;
-                    startQuestion(); // Chama a próxima pergunta
-                } else {
-                    document.getElementById("timeLeft").innerText = MAX_TIME - timeTaken;
-                }
-            }, 1000);
-        }
-
-        function checkAnswer(selected) {
-            clearInterval(timerInterval); // Parar o temporizador
-            if (selected === questions[currentQuestionIndex].answer) {
-                score += MAX_TIME - timeTaken; // Adicionar pontos baseados no tempo
-            }
+    // Reiniciar temporizador
+    timeTaken = 0;
+    document.getElementById("timeLeft").innerText = MAX_TIME;
+    timerInterval = setInterval(() => {
+        timeTaken++;
+        if (timeTaken >= MAX_TIME) {
+            clearInterval(timerInterval);
+            alert("Tempo esgotado!");
             currentQuestionIndex++;
-            startQuestion(); // Avançar para a próxima pergunta
+            startQuestion(); // Chama a próxima pergunta
+        } else {
+            document.getElementById("timeLeft").innerText = MAX_TIME - timeTaken;
         }
+    }, 1000);
+}
 
-        function endGame() {
-            document.getElementById("gameScreen").style.display = "none";
-            document.getElementById("scoreScreen").style.display = "block";
-            document.getElementById("finalScore").innerText = `Você fez ${score} pontos!`;
-            displayRanking();
-        }
+function checkAnswer(selected) {
+    clearInterval(timerInterval); // Parar o temporizador
+    if (selected === questions[currentQuestionIndex].answer) {
+        // Pontuação baseada no tempo, de 0 a 10 pontos
+        let pointsEarned = Math.max(0, MAX_POINTS - (timeTaken * (MAX_POINTS / MAX_TIME)));
+        score += pointsEarned;
+    }
+    currentQuestionIndex++;
+    startQuestion(); // Avançar para a próxima pergunta
+}
 
-        function displayRanking() {
-            const rankingList = document.getElementById("rankingList");
-            rankingList.innerHTML = ""; // Limpar lista anterior
-            // Simulando a exibição de um ranking
-            const playerName = document.getElementById("playerName").value;
-            const ranking = [playerName + " - " + score]; // Para simulação, adicionamos apenas o jogador atual
-            ranking.forEach(entry => {
-                const li = document.createElement("li");
-                li.innerText = entry;
-                rankingList.appendChild(li);
-            });
-        }
+function endGame() {
+    document.getElementById("gameScreen").style.display = "none";
+    document.getElementById("scoreScreen").style.display = "block";
+    document.getElementById("finalScore").innerText = `Você fez ${score.toFixed(2)} pontos!`;
+    displayRanking();
+}
 
-        document.getElementById("restartGame").addEventListener("click", () => {
-            currentQuestionIndex = 0; // Resetar o índice da pergunta
-            score = 0; // Resetar a pontuação
-            document.getElementById("loginScreen").style.display = "block"; // Voltar para a tela de login
-            document.getElementById("gameScreen").style.display = "none";
-            document.getElementById("scoreScreen").style.display = "none";
-        });
+function displayRanking() {
+    const rankingList = document.getElementById("rankingList");
+    rankingList.innerHTML = ""; // Limpar lista anterior
+    const playerName = document.getElementById("playerName").value;
+    const ranking = [playerName + " - " + score.toFixed(2)]; // Para simulação, adicionamos apenas o jogador atual
+    ranking.forEach(entry => {
+        const li = document.createElement("li");
+        li.innerText = entry;
+        rankingList.appendChild(li);
+    });
+}
+
+document.getElementById("restartGame").addEventListener("click", () => {
+    currentQuestionIndex = 0; // Resetar o índice da pergunta
+    score = 0; // Resetar a pontuação
+    document.getElementById("loginScreen").style.display = "block"; // Voltar para a tela de login
+    document.getElementById("gameScreen").style.display = "none";
+    document.getElementById("scoreScreen").style.display = "none";
+});
     </script>
 </body>
 </html>
